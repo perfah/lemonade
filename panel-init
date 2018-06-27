@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#Reads all available layouts into an array
+IFS=', ' read -a layouts <<< $(find -maxdepth 1 -type d -name 'layout*')
+
+mkdir /tmp/panelcache
+
+#Ensure there is a FIFO-file for every layout
+for layout in "${layouts[@]}"
+	do
+		layoutname=$(echo $layout | cut -c 3-)
+		cachefile="/tmp/panelcache/$layoutname"
+		if [ ! -e "$cachefile" ] ; then
+			mkfifo "$cachefile"
+		fi
+done

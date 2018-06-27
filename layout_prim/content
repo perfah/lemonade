@@ -1,0 +1,76 @@
+#!/bin/bash
+
+#Startup
+#agenda=""
+#watch -n 10 gcalcli agenda | tail -3 | head -2 | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" | cut -c 12- | $agenda &
+
+highlight="%{B#00FFFFFF}"
+normal="%{B-}"
+aa="%{A"
+ab=":}"
+ac="%{A}"
+
+activities(){
+    echo -n "%{A4:bspc desktop -f next:}"
+    echo -n "%{A5:bspc desktop -f prev:}"
+
+    #Get the current workspace
+    current=$(bspc query -d focused -D)
+    declare -A desc=(
+        ["I"]='\ue601'
+        ["II"]="\ue7e6"
+        ["III"]="\ue605"
+        ["IV"]="\ue611"
+        ["V"]="\ue616"
+    )
+
+    i=0
+    for line in $(bspc query -D); do
+        i=$((i+1))
+        if [ "$1" -lt "$i" ] && [ "$i" -lt "$2" ]; then
+          if [ "$line" == "$current" ]; then
+             echo -en "%{F#FFFFFFFF}$highlight "
+             echo -en "${desc["$line"]} %{F-}%{B-}"
+          else
+            echo -en "%{F#55FFFFFF}%{A:bspc desktop -f ^$i:} "
+            echo -en "${desc["$line"]} %{A}%{F-}"
+          fi
+        fi
+     done
+
+     echo -n "%{A}%{A}"
+}
+tid(){
+  echo -en "$highlight \ue64e $normal "
+  echo -n "$(date +"%T")"
+}
+currentApp(){
+    app=$(xtitle $(bspc query --windows --window focused) )
+    echo -en "%{A:synapse:}$highlight > %{B-}%{A} $app"
+}
+calendar(){
+	#url="https://www.google.com/calendar/feeds/per.fahlander%40gmail.com/private-6cffdb1535793144dafefdb670048454/basic"
+	echo -n "%{A:xdg-open https://www.google.com/calendar:}"
+    echo -en "$highlight \ue653 $normal $(date +'%d of %B')"
+	echo -n "%{A}"
+} 
+
+battery(){
+    now=$(cat /sys/class/power_supply/BAT0/charge_now)
+    full=$(cat /sys/class/power_supply/BAT0/charge_full)
+    echo -en "$highlight \ue6b5 $normal "
+    echo -n $(echo "100*$now/$full" | bc)%
+}
+
+
+s=" "
+
+left="$(currentApp)"
+center="$(activities 0 6)"
+right="$(battery) $(calendar) $(tid) "
+
+echo -en "%{l}$left"
+echo -en "%{c}$center"
+echo -en "%{r}$right"
+
+echo ""

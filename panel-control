@@ -1,0 +1,67 @@
+#!/bin/bash
+
+#Script info
+usage="panel-control [arguments]
+Firstly kills the existing process(es), provided that such are present and in consistency with the selection. Will then, by default, subsequently relaunch it.
+By default, both the frontend and backend is selected.
+"
+arguments="
+ -f: Select only the frontend process
+ -b: Select only the backend process
+ -k: Kill both the frontend and the backend
+ -h: Displays this help message
+"
+
+#The CWD must explicitly be set for this script to executable from remote directories
+dir="$HOME/.rice/lemonade"
+cd "$dir"
+
+backendprocess="panel-backend"
+frontendprocess="panel-frontend"
+selection="Panel"
+
+#Iterate over the command line arguments
+for arg in "$@"
+do
+	case "$arg" in
+		-f) selection="Frontend" ;;
+		-b) selection="Backend" ;;
+        -k) kill="No restart." ;;
+		-h)
+			echo -e "~Lemonade - Lemonbar Control Script~ \n"
+			echo "Usage: $usage"
+			echo "Arguments: $arguments"
+			exit
+			;;
+		\?)
+			echo "Invalid option"
+			;;
+	esac
+done
+
+#The relevant processes will be killed regardless of whether a new launch is instructed.
+case "$selection" in
+    Panel | Frontend )
+        killall lemonbar &> /dev/null
+        killall "$frontendprocess" &> /dev/null
+        ;&
+    Panel | Backend )
+        killall "$backendprocess" &> /dev/null
+        ;&
+esac
+echo "$selection may have been requisitely killed."
+
+#The relevant processes will only be restarted if no explicit kill argument is presented
+if [[ ! $kill ]]; then
+	sleep 0.5
+    case "$selection" in
+        Panel | Frontend )
+            nohup "./$frontendprocess" >& /dev/null &
+			;&
+        Panel | Backend )
+            eval "./$backendprocess" >& /dev/null &
+            ;&
+    esac
+
+    echo "$selection is restarting..."
+fi

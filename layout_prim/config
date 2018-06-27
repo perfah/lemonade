@@ -1,0 +1,25 @@
+#!/bin/bash
+
+#Dimensions:
+WIDTH=1920
+HEIGHT=25
+LEFT=0
+TOP=0
+
+BORDER_WEIGHT=1
+
+#Coloring scheme
+BG="#AAFFFFFF"
+FG="#FF37110C"
+
+#FG=$( ("10000" -lt "$wallpapergrays" ? "#FF000000" : "#FFFFFFFF") )
+#notify-send "lol: $wallpapergrays => $FG"
+
+#FONTS:
+#FONT1="icomoon:size=12"
+FONT1="Serif:size:12"
+FONT2="GEInspira:size=11"
+FONT3="FontAwesome:size=12"
+#FONT4="-misc-tamsyn-medium-r-normal--0-0-100-100-c-0-iso8859-1"
+
+echo "Config file loaded."

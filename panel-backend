@@ -1,0 +1,18 @@
+#!/bin/bash
+
+#Enforces initizalition of FIFO-files
+source "./panel-init"
+
+export PANEL_IS_RUNNING=1
+
+while [ $PANEL_IS_RUNNING -eq 1 ]; do
+	for layout in "${layouts[@]}"
+	do
+		content="$(echo "$layout/content" | cut -c 3-)"
+
+		layoutname=$(echo $layout | cut -c 3-)
+		cachefile="/tmp/panelcache/$layoutname"
+
+		eval $content > "$cachefile"
+	done
+done

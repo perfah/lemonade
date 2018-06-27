@@ -1,0 +1,24 @@
+#!/bin/bash
+
+#Enforces initizalition of FIFO-files
+source "./panel-init"
+
+for layout in "${layouts[@]}"
+	do
+    #Retrieves the command line arguments for Lemonbar
+    source "$layout/config"
+	layoutname=$(echo $layout | cut -c 3-)
+	cachefile="/tmp/panelcache/$layoutname"
+    tail -f "$cachefile" | lemonbar \
+    	-d \
+    	-g ${WIDTH}x${HEIGHT}+${LEFT}+${TOP} \
+    	-f "$FONT1" \
+    	-f "$FONT2" \
+		-f "$FONT3" \
+		-f "$FONT4" \
+    	-B "$BG"\
+    	-F "$FG" \
+			-u 1 \
+			-o 1 \
+	| bash &			
+done
